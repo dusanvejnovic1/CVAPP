@@ -18,7 +18,7 @@ node tools/render-pdf.js path/to/file.html
 
 ## GitHub Actions
 
-- Actions → “Render CV PDF (A4)” → Run workflow
+- Actions → "Render CV PDF (A4)" → Run workflow
 - Download the `Dusan_Vejnovic_CV_A4` artifact
 
 ## Print preview settings (manual)

@@ -56,7 +56,6 @@ const outPath = path.join(outDir, "Dusan_Vejnovic_CV_A4.pdf");
       path: outPath,
       printBackground: true,
       preferCSSPageSize: true,
-      // Force no margins (we already handle margins with CSS)
       margin: { top: "0", right: "0", bottom: "0", left: "0" },
       scale: 1
     });
