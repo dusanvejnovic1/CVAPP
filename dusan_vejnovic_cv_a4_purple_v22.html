@@ -399,7 +399,10 @@
     .course-title { font-size: 9pt; font-weight: 600; color: var(--accent-ink); }
     .course-date { font-size: 8pt; color: var(--muted); margin-top: 0.8mm; }
 
-    /* PRINT MODE: switch grid -> table layout for reliable pagination */
+    /* Helpers for hybrid print */
+    .print-only { display: none; }
+
+    /* PRINT MODE: hybrid layout */
     @media print {
       html, body { background: #fff; }
       @page { size: A4; margin: 0; }
@@ -413,7 +416,7 @@
         isolation: auto; /* avoid extra stacking contexts */
       }
 
-      /* Replace grid with table for fragmentation */
+      /* Keep two columns using table layout */
       .container {
         display: table !important;
         width: 100% !important;
@@ -440,19 +443,20 @@
       .sidebar::after { display: none !important; }
       .sidebar::before { border-color: rgba(241,231,198,0.28) !important; }
 
-      /* Name chip: center, no transform/blur/shadows */
+      /* Name chip: center, keep background and subtle shadow; add border fallback */
       .name::before { display: none !important; }
       .name {
         position: static !important;
         transform: none !important;
         margin: 0 auto 2.2mm auto !important;
-        box-shadow: none !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.10) !important;
         -webkit-text-stroke: 0.25px rgba(0,0,0,0.06) !important;
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
+        background-color: var(--name-bg) !important; /* explicit for print */
+        color: var(--name-ink) !important;
+        border: 1px solid rgba(241,231,198,0.6) !important; /* fallback if background is stripped */
       }
 
-      /* General crispness */
+      /* Typography crispness */
       .title, .sidebar-title, .skill-category {
         -webkit-text-stroke: 0.22px rgba(0,0,0,0.06) !important;
       }
@@ -460,38 +464,35 @@
         -webkit-text-stroke: 0.25px rgba(215,194,122,0.08) !important;
       }
 
-      /* Allow content to flow without forced page-sized boxes */
-      .page, .container, .sidebar, .main, .main-inner { overflow: visible !important; }
-    }
-
-    /* Print compaction (kept) */
-    @media print {
+      /* Compact spacing */
       :root { --pad-top: 8mm; --pad-bottom: 8mm; }
       body { font-size: 8.6pt; line-height: 1.24; }
       .sidebar-inner { gap: 2.6mm; }
       .main-inner { gap: 2.4mm; max-width: 97%; }
 
-      .name { font-size: 18.8pt !important; padding: 1mm 2.6mm !important; }
-      .title { font-size: 14.2pt !important; }
+      /* Strong page-break controls */
+      .profile-section,
+      .sidebar-section,
+      .experience-item,
+      .course-item,
+      .achievements-section,
+      .main-section,
+      .job-description li,
+      .development-list li,
+      .achievements-list li {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
 
-      .main-title { font-size: 15.2pt; padding-bottom: 1.1mm; margin-bottom: 1.8mm; }
-      .achievements-title { font-size: 14.2pt; padding-bottom: 1mm; margin-bottom: 1.8mm; }
-      .sidebar-title { font-size: 12.4pt; padding-bottom: 1mm; margin-bottom: 2.2mm; }
-      .skill-category { font-size: 10.4pt; }
+      /* Hybrid trick: hide some sidebar sections in print and show them after main */
+      .sidebar .sb-languages,
+      .sidebar .sb-interests { display: none !important; }
 
-      .experience-item + .experience-item { margin-top: 2mm; padding-top: 1.6mm; }
-      .job-header { margin-bottom: 0.8mm; }
-      .job-title { font-size: 9.2pt; margin-bottom: 0.7mm; }
-      .company-info { margin-bottom: 0.8mm; }
-      .job-date { font-size: 7.6pt; padding: 0.7mm 1.8mm; border-radius: 6pt; }
-      .job-description { margin-top: 1mm; }
-      .job-description li { font-size: 8.2pt; line-height: 1.20; margin-bottom: 0.8mm; max-width: 97%; }
-      .development-list li, .achievements-list li { line-height: 1.20; margin-bottom: 1.0mm; }
-      .courses-grid { gap: 1.8mm; }
-      .course-item { padding: 1.5mm; }
-      .course-title { font-size: 8.7pt; }
-      .course-date { font-size: 7.6pt; margin-top: 0.6mm; }
-      p, li, .summary-text, .job-description li, .development-list li, .achievements-list li { max-width: 97%; padding-right: 2mm; }
+      .print-only { display: block !important; }
+      .print-only.sidebar-continuation { margin-top: 4mm; }
+
+      /* Allow content to flow without forced page-sized boxes */
+      .page, .container, .sidebar, .main, .main-inner { overflow: visible !important; }
     }
   </style>
 </head>
@@ -567,7 +568,7 @@
             <div class="skill-items">Problem-solving, Team coordination, Adaptability, Time management, Mentoring, Analytical mindset</div>
           </section>
 
-          <section class="sidebar-section">
+          <section class="sidebar-section sb-languages">
             <h3 class="sidebar-title">Languages</h3>
             <div class="languages-item">
               <span class="language-name">Serbian</span>
@@ -579,7 +580,7 @@
             </div>
           </section>
 
-          <section class="sidebar-section">
+          <section class="sidebar-section sb-interests">
             <h3 class="sidebar-title">Interests</h3>
             <div class="skill-items">Video Game Modding and Design, AI Technology Applications in Testing, Gaming Industry Innovation Trends</div>
           </section>
@@ -668,6 +669,26 @@
               </div>
             </div>
           </section>
+
+          <!-- Print-only continuation so page 2 isn't half blank -->
+          <div class="print-only sidebar-continuation">
+            <section class="sidebar-section">
+              <h3 class="sidebar-title">Languages</h3>
+              <div class="languages-item">
+                <span class="language-name">Serbian</span>
+                <span class="language-level">Native</span>
+              </div>
+              <div class="languages-item">
+                <span class="language-name">English</span>
+                <span class="language-level">Advanced</span>
+              </div>
+            </section>
+
+            <section class="sidebar-section">
+              <h3 class="sidebar-title">Interests</h3>
+              <div class="skill-items">Video Game Modding and Design, AI Technology Applications in Testing, Gaming Industry Innovation Trends</div>
+            </section>
+          </div>
         </div>
       </main>
     </div>
